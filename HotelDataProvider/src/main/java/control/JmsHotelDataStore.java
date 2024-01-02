@@ -5,6 +5,8 @@ import model.Hotel;
 import javax.jms.Connection;
 
 public class JmsHotelDataStore implements HotelDataStore{
+    private final String topic = "information.hotel";
+    private final String url = "tcp://localhost:61616";
     @Override
     public Connection connection() {
         return null;
@@ -18,5 +20,13 @@ public class JmsHotelDataStore implements HotelDataStore{
     @Override
     public void save(Hotel hotel) {
 
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }
