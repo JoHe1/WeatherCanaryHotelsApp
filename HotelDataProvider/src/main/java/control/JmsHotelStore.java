@@ -4,7 +4,7 @@ import model.Hotel;
 
 import javax.jms.Connection;
 
-public class JmsHotelDataStore implements HotelDataStore{
+public class JmsHotelStore implements HotelStore {
     private final String topic = "information.hotel";
     private final String url = "tcp://localhost:61616";
     @Override

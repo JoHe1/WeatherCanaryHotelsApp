@@ -5,6 +5,6 @@ import model.Location;
 
 import java.util.List;
 
-public interface HotelDataProvider {
+public interface HotelProvider {
     List<Hotel> get(Location location);
 }

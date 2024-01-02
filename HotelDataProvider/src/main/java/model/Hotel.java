@@ -1,6 +1,7 @@
 package model;
 
 import java.time.Instant;
+import java.util.Date;
 
 public class Hotel {
 

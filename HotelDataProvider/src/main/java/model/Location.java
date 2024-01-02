@@ -3,10 +3,10 @@ package model;
 public class Location {
     private final String island;
     private final String town;
-    private final Double latitude;
-    private final Double longitude;
+    private final String latitude;
+    private final String longitude;
 
-    public Location(String island, String town, Double latitude, Double longitude) {
+    public Location(String island, String town, String latitude, String longitude) {
         this.island = island;
         this.town = town;
         this.latitude = latitude;
@@ -21,11 +21,11 @@ public class Location {
         return town;
     }
 
-    public Double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public Double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 }
