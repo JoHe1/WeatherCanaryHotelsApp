@@ -46,20 +46,43 @@ public class SerpApiHotelProvider implements HotelProvider {
             in.close();
 
             Map<String, String> dates = dateTimeCheckInCheckOut();
-
             for (JsonElement jsonElement : JsonParser.parseString(response.toString()).getAsJsonObject().getAsJsonArray("properties")) {
                 String name = jsonElement.getAsJsonObject().get("name").getAsString();
                 String type = jsonElement.getAsJsonObject().get("type").getAsString();
-                String description = jsonElement.getAsJsonObject().get("description").getAsString();
-                String link = jsonElement.getAsJsonObject().get("link").getAsString();
+                String description = "No description";
+                if(jsonElement.getAsJsonObject().has("description")){
+                    description = jsonElement.getAsJsonObject().get("description").getAsString();
+                }
+                String link = "No link";
+                if(jsonElement.getAsJsonObject().has("link")){
+                    link = jsonElement.getAsJsonObject().get("link").getAsString();
+                }
                 String checkInDate = dates.get("checkInDateFormatted");
-                String checkInTime = jsonElement.getAsJsonObject().get("check_in_time").getAsString();
+                String checkInTime = "No check in time";
+                if (jsonElement.getAsJsonObject().has("check_in_time")) {
+                    checkInTime = jsonElement.getAsJsonObject().get("check_in_time").getAsString();
+                }
                 String checkOutDate = dates.get("checkOutDateFormatted");
-                String checkOutTime = jsonElement.getAsJsonObject().get("check_out_time").getAsString();
-                Double price = jsonElement.getAsJsonObject().get("rate_per_night").getAsJsonObject().get("extracted_lowest").getAsDouble();
-                Double rating = jsonElement.getAsJsonObject().get("overall_rating").getAsDouble();
-                Integer numberOfReviews = jsonElement.getAsJsonObject().get("reviews").getAsInt();
-                Integer numberOfStars = jsonElement.getAsJsonObject().get("extracted_hotel_class").getAsInt();
+                String checkOutTime = "No check out time";
+                if (jsonElement.getAsJsonObject().has("check_out_time")) {
+                    checkOutTime = jsonElement.getAsJsonObject().get("check_out_time").getAsString();
+                }
+                Double price = 0.0;
+                if (jsonElement.getAsJsonObject().has("price")) {
+                    price = jsonElement.getAsJsonObject().get("rate_per_night").getAsJsonObject().get("extracted_lowest").getAsDouble();
+                }
+                Double rating = null;
+                if (jsonElement.getAsJsonObject().has("overall_rating")) {
+                    rating = jsonElement.getAsJsonObject().get("overall_rating").getAsDouble();
+                }
+                Integer numberOfReviews = null;
+                if (jsonElement.getAsJsonObject().has("reviews")) {
+                    numberOfReviews = jsonElement.getAsJsonObject().get("reviews").getAsInt();
+                }
+                Integer numberOfStars = null;
+                if (jsonElement.getAsJsonObject().has("extracted_hotel_class")) {
+                    numberOfStars = jsonElement.getAsJsonObject().get("extracted_hotel_class").getAsInt();
+                }
                 Double latitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("latitude").getAsDouble();
                 Double longitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("longitude").getAsDouble();
                 hotels.add(new Hotel(name, type, description, link, checkInDate, checkInTime, checkOutDate, checkOutTime, price, rating, numberOfReviews, numberOfStars, latitude, longitude, location));
@@ -75,7 +98,7 @@ public class SerpApiHotelProvider implements HotelProvider {
         Map<String, String> dates = dateTimeCheckInCheckOut();
         try {
             String url = "https://serpapi.com/search.json?engine=google_hotels" +
-                    "&q=Hoteles+en+" + location.getTown() + " , " + location.getIsland() +
+                    "&q=Hoteles+en+" + location.getTown() + "+,+" + location.getIsland() +
                     "&gl=es" +
                     "&hl=es" +
                     "&currency=EUR" +
