@@ -57,12 +57,12 @@ public class HotelStorable implements Storable{
         }
     }
     private MessageConsumer initialiseSubscriber() throws JMSException {
-        ConnectionFactory factory = new ActiveMQConnectionFactory(brokerURL); //TODO CAMBIAR ATRIBUTOS POR SUS GETS
+        ConnectionFactory factory = new ActiveMQConnectionFactory(getBrokerURL()); //TODO CAMBIAR ATRIBUTOS POR SUS GETS
         Connection connection = factory.createConnection();
         connection.setClientID("DatalakeBuilder" + getTopicName());
         connection.start();
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Topic topic = session.createTopic(topicName);
+        Topic topic = session.createTopic(getTopicName());
         MessageConsumer subscriber = session.createDurableSubscriber(topic, "DatalakeBuilder" + getTopicName());
         return subscriber;
     }
