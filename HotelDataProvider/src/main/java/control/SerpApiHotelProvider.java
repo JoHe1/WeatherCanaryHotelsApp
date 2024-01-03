@@ -6,13 +6,11 @@ import exceptions.ConnectionException;
 import exceptions.URLInvalidException;
 import model.Hotel;
 import model.Location;
-import org.fusesource.hawtbuf.BufferEditor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -85,7 +83,7 @@ public class SerpApiHotelProvider implements HotelProvider {
                 }
                 Double latitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("latitude").getAsDouble();
                 Double longitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("longitude").getAsDouble();
-                hotels.add(new Hotel(name, type, description, link, checkInDate, checkInTime, checkOutDate, checkOutTime, price, rating, numberOfReviews, numberOfStars, latitude, longitude, location));
+                hotels.add(new Hotel(name, type, description, link, checkInDate, checkInTime, checkOutDate, checkOutTime, price, rating, numberOfReviews, numberOfStars, latitude, longitude, location, getSs()));
             }
         } catch (IOException e) {
             throw new ConnectionException("Connection error" + e.getMessage());

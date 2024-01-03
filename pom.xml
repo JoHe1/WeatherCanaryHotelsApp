@@ -11,6 +11,7 @@
     <modules>
         <module>PredictionProvider</module>
         <module>HotelDataProvider</module>
+        <module>DatalakeBuilder</module>
     </modules>
 
     <properties>

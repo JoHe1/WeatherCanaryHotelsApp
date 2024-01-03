@@ -1,7 +1,6 @@
 package model;
 
 import java.time.Instant;
-import java.util.Date;
 
 public class Hotel {
 
@@ -23,8 +22,9 @@ public class Hotel {
 
     private final Location location;
     private final Instant ts = Instant.now();
+    private final String ss;
 
-    public Hotel(String name, String type, String description, String link, String checkInDate, String checkInTime, String checkOutDate, String checkOutTime, Double price, Double rating, Integer numberOfReviews, Integer numberOfStars, Double latitude, Double longitude, Location location) {
+    public Hotel(String name, String type, String description, String link, String checkInDate, String checkInTime, String checkOutDate, String checkOutTime, Double price, Double rating, Integer numberOfReviews, Integer numberOfStars, Double latitude, Double longitude, Location location, String ss) {
         this.name = name;
         this.type = type;
         this.description = description;
@@ -40,6 +40,7 @@ public class Hotel {
         this.latitude = latitude;
         this.longitude = longitude;
         this.location = location;
+        this.ss = ss;
     }
 
     public String getName() {
@@ -104,5 +105,9 @@ public class Hotel {
 
     public Instant getTs() {
         return ts;
+    }
+
+    public String getSs() {
+        return ss;
     }
 }
