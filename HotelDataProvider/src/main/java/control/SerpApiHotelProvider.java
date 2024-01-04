@@ -69,15 +69,15 @@ public class SerpApiHotelProvider implements HotelProvider {
                 if (jsonElement.getAsJsonObject().has("price")) {
                     price = jsonElement.getAsJsonObject().get("rate_per_night").getAsJsonObject().get("extracted_lowest").getAsDouble();
                 }
-                Double rating = null;
+                Double rating = 0.0;
                 if (jsonElement.getAsJsonObject().has("overall_rating")) {
                     rating = jsonElement.getAsJsonObject().get("overall_rating").getAsDouble();
                 }
-                Integer numberOfReviews = null;
+                Integer numberOfReviews = 0;
                 if (jsonElement.getAsJsonObject().has("reviews")) {
                     numberOfReviews = jsonElement.getAsJsonObject().get("reviews").getAsInt();
                 }
-                Integer numberOfStars = null;
+                Integer numberOfStars = 0;
                 if (jsonElement.getAsJsonObject().has("extracted_hotel_class")) {
                     numberOfStars = jsonElement.getAsJsonObject().get("extracted_hotel_class").getAsInt();
                 }

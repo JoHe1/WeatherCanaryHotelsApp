@@ -24,7 +24,7 @@ public class Main {
             loadStaticLocations(args[1]);
             periodicTask(weatherController);
         }
-    private static void periodicTask(WeatherController weatherController) {
+    private static void periodicTask(WeatherController weatherController) { // TODO TRANSLADAR AL CONTROLLER
             /*
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         Calendar now = Calendar.getInstance();

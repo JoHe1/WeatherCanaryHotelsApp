@@ -69,7 +69,7 @@ public class OpenWeatherMapProvider implements WeatherProvider{
             String url = "https://api.openweathermap.org/data/2.5/forecast?"
                     + "lat=" + location.getLatitude()
                     + "&lon=" + location.getLongitude()
-                    + "&cnt=2" // TODO QUITARLO
+                    + "&cnt=40" // TODO QUITARLO
                     + "&appid=" + apikey
                     + "&units=metric";
             URL obj = new URL(url);
@@ -80,7 +80,6 @@ public class OpenWeatherMapProvider implements WeatherProvider{
         } catch (IOException e) {
             throw new ConnectionException("Connection error" + e.getMessage());
         }
-
         return connection;
     }
 }

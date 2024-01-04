@@ -1,5 +1,5 @@
 public class Main {
-    public static void main(String[] args) { // TODO PASAR POR ARGUMENTOS LA RUTA DELFICHERO DATALAKE¿?
+    public static void main(String[] args) { // TODO PASAR POR ARGUMENTOS LA RUTA DELFICHERO DATALAKE hacer
         Storable hotelStorable = new HotelStorable();
         Storable WeatherStorable = new WeatherStorable();
         hotelStorable.save();

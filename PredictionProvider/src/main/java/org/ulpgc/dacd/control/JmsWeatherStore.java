@@ -9,7 +9,7 @@ import org.ulpgc.dacd.model.Weather;
 import javax.jms.*;
 import java.time.Instant;
 
-public class JmsWeatherStore implements WeatherStore{
+public class JmsWeatherStore implements WeatherStore{ // TODO JmsWeatherPublisher
     public final String url = "tcp://localhost:61616";
     public final String subject = "prediction.Weather";
 
