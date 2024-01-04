@@ -5,7 +5,6 @@ import java.time.Instant;
 public class Hotel {
 
     private final String name;
-    private final String type;
     private final String description;
     private final String link;
     private final String checkInDate;
@@ -24,9 +23,8 @@ public class Hotel {
     private final Instant ts = Instant.now();
     private final String ss;
 
-    public Hotel(String name, String type, String description, String link, String checkInDate, String checkInTime, String checkOutDate, String checkOutTime, Double price, Double rating, Integer numberOfReviews, Integer numberOfStars, Double latitude, Double longitude, Location location, String ss) {
+    public Hotel(String name, String description, String link, String checkInDate, String checkInTime, String checkOutDate, String checkOutTime, Double price, Double rating, Integer numberOfReviews, Integer numberOfStars, Double latitude, Double longitude, Location location, String ss) {
         this.name = name;
-        this.type = type;
         this.description = description;
         this.link = link;
         this.checkInDate = checkInDate;
@@ -46,11 +44,6 @@ public class Hotel {
     public String getName() {
         return name;
     }
-
-    public String getType() {
-        return type;
-    }
-
     public String getDescription() {
         return description;
     }

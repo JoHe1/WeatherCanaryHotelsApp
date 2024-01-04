@@ -23,8 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HotelDataProcessor implements DataProcessor{
-    private final String datamartUrl = "jdbc:sqlite:datamart.db"; // TODO PASAR POR ARGUMENTO
+    private final String datamartUrl; // TODO PASAR POR ARGUMENTO
+    private final String datalakeUrl;
     private final String topicName = "information.Hotel";
+
+    public HotelDataProcessor(String datamartUrl, String datalakeUrl) {
+        this.datamartUrl = "jdbc:sqlite:" + datamartUrl + "datamart.db";
+        this.datalakeUrl = datalakeUrl + "datalake/eventstore/information.Hotel/SerpApi/";
+    }
+
     @Override
     public String collectDataFromDatalake() {
         Path path = getPathFile(); // TODO CONTROLADOR DE ERRORES ¿?
@@ -39,7 +46,7 @@ public class HotelDataProcessor implements DataProcessor{
         return null;
     }
     private Path getPathFile() {
-        String directory = "datalake/eventstore/information.Hotel/SerpApi";
+        String directory = getDatalakeUrl();
         Path result = null;
         LocalDate date = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -89,8 +96,8 @@ public class HotelDataProcessor implements DataProcessor{
         ArrayList<Object> listHotelData = new ArrayList<>(); // TODO HACER UN MAP PARA QUE QUEDE MAS MONO ¿?
         JsonElement jsonElement = JsonParser.parseString(data);
         listHotelData.add(jsonElement.getAsJsonObject().get("name").getAsString());
-        listHotelData.add(formatedIsland(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("island").getAsString()));
-        listHotelData.add(formatedTown(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("town").getAsString()));
+        listHotelData.add(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("island").getAsString());
+        listHotelData.add(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("town").getAsString());
         listHotelData.add(jsonElement.getAsJsonObject().get("description").getAsString());
         listHotelData.add(jsonElement.getAsJsonObject().get("link").getAsString());
         listHotelData.add(jsonElement.getAsJsonObject().get("checkInDate").getAsString());
@@ -102,12 +109,6 @@ public class HotelDataProcessor implements DataProcessor{
         listHotelData.add(jsonElement.getAsJsonObject().get("numberOfReviews").getAsInt());
         listHotelData.add(jsonElement.getAsJsonObject().get("numberOfStars").getAsInt());
         return listHotelData;
-    }
-    private String formatedIsland(String island){
-        return island.replace("+", " ");
-    }
-    private String formatedTown(String town){
-        return town.replace("+", " ");
     }
     private void createHotelTable() {
         try(Connection connection = DriverManager.getConnection(getDatamartUrl())) {
@@ -175,5 +176,9 @@ public class HotelDataProcessor implements DataProcessor{
 
     public String getTopicName() {
         return topicName;
+    }
+
+    public String getDatalakeUrl() {
+        return datalakeUrl;
     }
 }

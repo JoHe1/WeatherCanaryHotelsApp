@@ -38,3 +38,5 @@ build/
 .DS_Store
 /datalake/
 /datamart.db
+/DatalakeBuilder/src/main/datalake/
+/BusinessUnit/src/main/datamart.db

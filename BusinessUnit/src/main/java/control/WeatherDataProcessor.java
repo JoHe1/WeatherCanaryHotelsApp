@@ -22,8 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherDataProcessor implements DataProcessor{
-    private final String datamartUrl = "jdbc:sqlite:datamart.db"; // TODO PASAR POR ARGUMENTO
+    private final String datamartUrl; // TODO PASAR POR ARGUMENTO jdbc:sqlite:datamart.db
+    private final String datalakeUrl;
     private final String topicName = "prediction.Weather";
+
+    public WeatherDataProcessor(String datamartUrl, String datalakeUrl) {
+        this.datamartUrl = "jdbc:sqlite:" + datamartUrl + "datamart.db";
+        this.datalakeUrl = datalakeUrl + "datalake/eventstore/prediction.Weather/OpenWeatherMap/";
+    }
+
     @Override
     public String collectDataFromDatalake() {
         Path path = getPathFile(); // TODO CONTROLADOR DE ERRORES ¿?
@@ -39,7 +46,7 @@ public class WeatherDataProcessor implements DataProcessor{
     }
 
     private Path getPathFile() {
-        String directory = "datalake/eventstore/prediction.Weather/OpenWeatherMap";
+        String directory = getDatalakeUrl();
         Path result = null;
         LocalDate date = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -85,8 +92,8 @@ public class WeatherDataProcessor implements DataProcessor{
         ArrayList<Object> listWeatherData = new ArrayList<>(); //TODO HACER UN MAP PARA QUE QUEDE MAS MONO ¿?
         JsonElement jsonElement = JsonParser.parseString(data);
         listWeatherData.add(formatedPredictionTime(jsonElement.getAsJsonObject().get("predictionTime").getAsString()));
-        listWeatherData.add(formatedIsland(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("island").getAsString()));
-        listWeatherData.add(formatedTown(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("town").getAsString()));
+        listWeatherData.add(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("island").getAsString());
+        listWeatherData.add(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("town").getAsString());
         listWeatherData.add(jsonElement.getAsJsonObject().get("temperature").getAsDouble());
         listWeatherData.add(jsonElement.getAsJsonObject().get("precipitation").getAsDouble());
         listWeatherData.add(jsonElement.getAsJsonObject().get("humidity").getAsDouble());
@@ -94,30 +101,6 @@ public class WeatherDataProcessor implements DataProcessor{
         listWeatherData.add(jsonElement.getAsJsonObject().get("wind_velocity").getAsDouble());
         return listWeatherData;
     }
-
-    private String formatedIsland(String island) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < island.length(); i++) {
-            char character = island.charAt(i);
-            if (Character.isUpperCase(character) && i > 0) {
-                result.append(' ');
-            }
-            result.append(character);
-        }
-        return result.toString();
-    }
-    private String formatedTown(String town) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < town.length(); i++) {
-            char character = town.charAt(i);
-            if (Character.isUpperCase(character) && i > 0) {
-                result.append(' ');
-            }
-            result.append(character);
-        }
-        return result.toString();
-    }
-
     private String formatedPredictionTime(String predictionTime) {
         Instant instant = Instant.parse(predictionTime);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -187,5 +170,9 @@ public class WeatherDataProcessor implements DataProcessor{
 
     public String getTopicName() {
         return topicName;
+    }
+
+    public String getDatalakeUrl() {
+        return datalakeUrl;
     }
 }

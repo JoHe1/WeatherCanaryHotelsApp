@@ -14,8 +14,13 @@ import java.time.ZoneId;
 public class HotelStorable implements Storable{
     private final String brokerURL = "tcp://localhost:61616";
     private final String topicName = "information.Hotel";
-    private final String path = "datalake/eventstore/information.Hotel/";
+    private final String path;
     private String ss = "";
+
+    public HotelStorable(String path) {
+        this.path = path + "datalake/eventstore/information.Hotel/";
+    }
+
     @Override
     public void save() {
         try{

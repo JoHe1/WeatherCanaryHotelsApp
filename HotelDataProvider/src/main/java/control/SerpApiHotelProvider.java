@@ -7,6 +7,7 @@ import exceptions.URLInvalidException;
 import model.Hotel;
 import model.Location;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,10 +16,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SerpApiHotelProvider implements HotelProvider {
     private final String ss = "SerpApi";
@@ -45,45 +43,46 @@ public class SerpApiHotelProvider implements HotelProvider {
 
             Map<String, String> dates = dateTimeCheckInCheckOut();
             for (JsonElement jsonElement : JsonParser.parseString(response.toString()).getAsJsonObject().getAsJsonArray("properties")) {
-                String name = jsonElement.getAsJsonObject().get("name").getAsString();
-                String type = jsonElement.getAsJsonObject().get("type").getAsString();
-                String description = "No description";
-                if(jsonElement.getAsJsonObject().has("description")){
-                    description = jsonElement.getAsJsonObject().get("description").getAsString();
+                if(Objects.equals(jsonElement.getAsJsonObject().get("type").getAsString(), "hotel")) {
+                    String name = jsonElement.getAsJsonObject().get("name").getAsString();
+                    String description = "No description";
+                    if (jsonElement.getAsJsonObject().has("description")) {
+                        description = jsonElement.getAsJsonObject().get("description").getAsString();
+                    }
+                    String link = "No link";
+                    if (jsonElement.getAsJsonObject().has("link")) {
+                        link = jsonElement.getAsJsonObject().get("link").getAsString();
+                    }
+                    String checkInDate = dates.get("checkInDateFormatted");
+                    String checkInTime = "No check in time";
+                    if (jsonElement.getAsJsonObject().has("check_in_time")) {
+                        checkInTime = jsonElement.getAsJsonObject().get("check_in_time").getAsString();
+                    }
+                    String checkOutDate = dates.get("checkOutDateFormatted");
+                    String checkOutTime = "No check out time";
+                    if (jsonElement.getAsJsonObject().has("check_out_time")) {
+                        checkOutTime = jsonElement.getAsJsonObject().get("check_out_time").getAsString();
+                    }
+                    Double price = 0.0;
+                    if (jsonElement.getAsJsonObject().has("price")) {
+                        price = jsonElement.getAsJsonObject().get("rate_per_night").getAsJsonObject().get("extracted_lowest").getAsDouble();
+                    }
+                    Double rating = 0.0;
+                    if (jsonElement.getAsJsonObject().has("overall_rating")) {
+                        rating = jsonElement.getAsJsonObject().get("overall_rating").getAsDouble();
+                    }
+                    Integer numberOfReviews = 0;
+                    if (jsonElement.getAsJsonObject().has("reviews")) {
+                        numberOfReviews = jsonElement.getAsJsonObject().get("reviews").getAsInt();
+                    }
+                    Integer numberOfStars = 0;
+                    if (jsonElement.getAsJsonObject().has("extracted_hotel_class")) {
+                        numberOfStars = jsonElement.getAsJsonObject().get("extracted_hotel_class").getAsInt();
+                    }
+                    Double latitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("latitude").getAsDouble();
+                    Double longitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("longitude").getAsDouble();
+                    hotels.add(new Hotel(name, description, link, checkInDate, checkInTime, checkOutDate, checkOutTime, price, rating, numberOfReviews, numberOfStars, latitude, longitude, location, getSs()));
                 }
-                String link = "No link";
-                if(jsonElement.getAsJsonObject().has("link")){
-                    link = jsonElement.getAsJsonObject().get("link").getAsString();
-                }
-                String checkInDate = dates.get("checkInDateFormatted");
-                String checkInTime = "No check in time";
-                if (jsonElement.getAsJsonObject().has("check_in_time")) {
-                    checkInTime = jsonElement.getAsJsonObject().get("check_in_time").getAsString();
-                }
-                String checkOutDate = dates.get("checkOutDateFormatted");
-                String checkOutTime = "No check out time";
-                if (jsonElement.getAsJsonObject().has("check_out_time")) {
-                    checkOutTime = jsonElement.getAsJsonObject().get("check_out_time").getAsString();
-                }
-                Double price = 0.0;
-                if (jsonElement.getAsJsonObject().has("price")) {
-                    price = jsonElement.getAsJsonObject().get("rate_per_night").getAsJsonObject().get("extracted_lowest").getAsDouble();
-                }
-                Double rating = 0.0;
-                if (jsonElement.getAsJsonObject().has("overall_rating")) {
-                    rating = jsonElement.getAsJsonObject().get("overall_rating").getAsDouble();
-                }
-                Integer numberOfReviews = 0;
-                if (jsonElement.getAsJsonObject().has("reviews")) {
-                    numberOfReviews = jsonElement.getAsJsonObject().get("reviews").getAsInt();
-                }
-                Integer numberOfStars = 0;
-                if (jsonElement.getAsJsonObject().has("extracted_hotel_class")) {
-                    numberOfStars = jsonElement.getAsJsonObject().get("extracted_hotel_class").getAsInt();
-                }
-                Double latitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("latitude").getAsDouble();
-                Double longitude = jsonElement.getAsJsonObject().get("gps_coordinates").getAsJsonObject().get("longitude").getAsDouble();
-                hotels.add(new Hotel(name, type, description, link, checkInDate, checkInTime, checkOutDate, checkOutTime, price, rating, numberOfReviews, numberOfStars, latitude, longitude, location, getSs()));
             }
         } catch (IOException e) {
             throw new ConnectionException("Connection error" + e.getMessage());
@@ -94,9 +93,11 @@ public class SerpApiHotelProvider implements HotelProvider {
     private HttpURLConnection HttpURLConnection(Location location) {
         HttpURLConnection connection = null;
         Map<String, String> dates = dateTimeCheckInCheckOut();
+        String townFormatted = location.getTown().replace(" ", "+");
+        String islandFormatted = location.getIsland().replace(" ", "+");
         try {
             String url = "https://serpapi.com/search.json?engine=google_hotels" +
-                    "&q=Hoteles+en+" + location.getTown() + "+,+" + location.getIsland() +
+                    "&q=Hoteles+en+" + townFormatted + "+,+" + islandFormatted +
                     "&gl=es" +
                     "&hl=es" +
                     "&currency=EUR" +

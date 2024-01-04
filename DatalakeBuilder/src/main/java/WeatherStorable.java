@@ -14,8 +14,13 @@ import java.time.ZoneId;
 public class WeatherStorable implements Storable{
     private final String brokerUrl = "tcp://localhost:61616";
     private final String topicName = "prediction.Weather";
-    private final String path = "datalake/eventstore/prediction.Weather/";
+    private final String path;
     private String ss = "";
+
+    public WeatherStorable(String path) {
+        this.path = path + "datalake/eventstore/prediction.Weather/";
+    }
+
     @Override
     public void save() {
         try{
