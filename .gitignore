@@ -40,3 +40,4 @@ build/
 /datamart.db
 /DatalakeBuilder/src/main/datalake/
 /BusinessUnit/src/main/datamart.db
+/ReservationWeatherAnalyzer/src/main/datamart.db
