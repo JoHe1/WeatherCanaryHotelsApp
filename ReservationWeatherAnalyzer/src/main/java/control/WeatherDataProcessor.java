@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherDataProcessor implements DataProcessor{
-    private final String datamartUrl; // TODO PASAR POR ARGUMENTO jdbc:sqlite:datamart.db
+    public final String datamartUrl;
     private final String datalakeUrl;
     private final String topicName = "prediction.Weather";
 
@@ -33,16 +33,32 @@ public class WeatherDataProcessor implements DataProcessor{
 
     @Override
     public String collectDataFromDatalake() {
-        Path path = getPathFile(); // TODO CONTROLADOR DE ERRORES ¿?
-        try(BufferedReader reader = Files.newBufferedReader(path)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                saveDataToDatamart(line);
+        createWeatherTable();
+        if(!doesTableHaveData()) {
+            Path path = getPathFile();
+            try (BufferedReader reader = Files.newBufferedReader(path)) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    saveDataToDatamart(line);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return null;
+    }
+
+    private boolean doesTableHaveData() {
+        try(Connection connection = DriverManager.getConnection(getDatamartUrl())) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM prediction;");
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseSqliteException(e.getMessage());
+        }
+        return false;
     }
 
     private Path getPathFile() {
@@ -89,7 +105,7 @@ public class WeatherDataProcessor implements DataProcessor{
     }
 
     private List<Object> collectInformation(String data) {
-        ArrayList<Object> listWeatherData = new ArrayList<>(); //TODO HACER UN MAP PARA QUE QUEDE MAS MONO ¿?
+        ArrayList<Object> listWeatherData = new ArrayList<>();
         JsonElement jsonElement = JsonParser.parseString(data);
         listWeatherData.add(formatedPredictionTime(jsonElement.getAsJsonObject().get("predictionTime").getAsString()));
         listWeatherData.add(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("island").getAsString());
@@ -137,8 +153,11 @@ public class WeatherDataProcessor implements DataProcessor{
                 TextMessage textMessage = (TextMessage) message;
                 try {
                     String text = textMessage.getText();
+                    saveDataToDatamart(text);
+                    /*
                     List<Object> listWeatherData = collectInformation(text);
                     insertWeatherData(listWeatherData);
+                     */
                 } catch (JMSException e) {
                     throw new MessageBrokerException(e.getMessage());
                 }

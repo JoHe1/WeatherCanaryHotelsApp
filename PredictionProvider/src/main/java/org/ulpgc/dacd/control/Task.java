@@ -3,7 +3,7 @@ package org.ulpgc.dacd.control;
 import java.util.Date;
 
 public class Task implements Runnable{
-    WeatherController weatherController;
+    private final WeatherController weatherController;
 
     public Task(WeatherController weatherController) {
         this.weatherController = weatherController;
@@ -11,7 +11,11 @@ public class Task implements Runnable{
 
     @Override
     public void run() {
-        weatherController.execute();
         System.out.println("The task execute at: " + new Date());
+        getWeatherController().execute();
+    }
+
+    public WeatherController getWeatherController() {
+        return weatherController;
     }
 }

@@ -18,7 +18,7 @@ public class Main {
             HotelStore hotelStore = new JmsHotelStore();
             HotelController hotelController = new HotelController(hotelProvider, hotelStore);
             loadStaticIslands(args[1]);
-            hotelController.execute();
+            hotelController.periodicTask();
 
         }
 

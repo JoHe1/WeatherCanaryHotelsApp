@@ -22,27 +22,8 @@ public class Main {
             WeatherStore weatherStore = new JmsWeatherStore();
             WeatherController weatherController = new WeatherController(weatherProvider, weatherStore);
             loadStaticLocations(args[1]);
-            periodicTask(weatherController);
+            weatherController.periodicTask();
         }
-    private static void periodicTask(WeatherController weatherController) { // TODO TRANSLADAR AL CONTROLLER
-            /*
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        Calendar now = Calendar.getInstance();
-        Calendar nextRun = Calendar.getInstance();
-        nextRun.set(Calendar.HOUR_OF_DAY, 12);
-        nextRun.set(Calendar.MINUTE, 0);
-        nextRun.set(Calendar.SECOND, 0);
-        nextRun.set(Calendar.MILLISECOND, 0);
-        if (now.after(nextRun)) {
-            nextRun.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        long initialDelay = nextRun.getTimeInMillis() - System.currentTimeMillis();
-        scheduler.scheduleAtFixedRate(new Task(weatherController), initialDelay, 6 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
-        */
-        new Task(weatherController).run();
-        }
-
-
     private static void loadStaticLocations(String file) {
         try (Reader reader = new FileReader(file);
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT)) {

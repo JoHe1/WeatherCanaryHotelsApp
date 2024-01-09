@@ -45,15 +45,15 @@ public class OpenWeatherMapProvider implements WeatherProvider{
                 for (JsonElement jsonElement : JsonParser.parseString(response.toString()).getAsJsonObject().getAsJsonArray("list")) {
                     String dt_txt = jsonElement.getAsJsonObject().get("dt_txt").getAsString();
                     String hour = dt_txt.substring(11,13);
-                    //if (hour.equals("12")){ TODO QUITAR COMETNARIOS
+                    if (hour.equals("12")){
                         double temp = jsonElement.getAsJsonObject().get("main").getAsJsonObject().get("temp").getAsDouble();
-                        double pop = jsonElement.getAsJsonObject().get("pop").getAsDouble();
+                        double pop = jsonElement.getAsJsonObject().get("pop").getAsDouble() * 100;
                         double humidity = jsonElement.getAsJsonObject().get("main").getAsJsonObject().get("humidity").getAsDouble();
                         double clouds = jsonElement.getAsJsonObject().get("clouds").getAsJsonObject().get("all").getAsDouble();
                         double wind = jsonElement.getAsJsonObject().get("wind").getAsJsonObject().get("speed").getAsDouble();
                         Instant instantPrediction = Instant.ofEpochSecond(jsonElement.getAsJsonObject().get("dt").getAsLong());
                         weathers.add(new Weather(temp, pop, humidity, clouds, wind, instantPrediction, location, ss));
-                    //}
+                    }
                 }
             }
         } catch (IOException e) {
@@ -69,7 +69,6 @@ public class OpenWeatherMapProvider implements WeatherProvider{
             String url = "https://api.openweathermap.org/data/2.5/forecast?"
                     + "lat=" + location.getLatitude()
                     + "&lon=" + location.getLongitude()
-                    + "&cnt=40" // TODO QUITARLO
                     + "&appid=" + apikey
                     + "&units=metric";
             URL obj = new URL(url);

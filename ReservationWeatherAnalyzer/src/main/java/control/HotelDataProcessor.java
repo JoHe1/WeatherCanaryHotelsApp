@@ -8,22 +8,20 @@ import exceptions.MessageBrokerException;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
+import javax.jms.Connection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HotelDataProcessor implements DataProcessor{
-    private final String datamartUrl; // TODO PASAR POR ARGUMENTO
+    private final String datamartUrl;
     private final String datalakeUrl;
     private final String topicName = "information.Hotel";
 
@@ -34,17 +32,34 @@ public class HotelDataProcessor implements DataProcessor{
 
     @Override
     public String collectDataFromDatalake() {
-        Path path = getPathFile(); // TODO CONTROLADOR DE ERRORES ¿?
-        try(BufferedReader reader = Files.newBufferedReader(path)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                saveDataToDatamart(line);
+        createHotelTable();
+        if (!doesTableHaveData()) {
+            Path path = getPathFile();
+            try (BufferedReader reader = Files.newBufferedReader(path)) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    saveDataToDatamart(line);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return null;
     }
+
+    private boolean doesTableHaveData() {
+        try(java.sql.Connection connection = DriverManager.getConnection(getDatamartUrl())) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM hotel;");
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseSqliteException(e.getMessage());
+        }
+        return false;
+    }
+
     private Path getPathFile() {
         String directory = getDatalakeUrl();
         Path result = null;
@@ -69,7 +84,7 @@ public class HotelDataProcessor implements DataProcessor{
         insertHotelData(listHotelData);
     }
     private void insertHotelData(List<Object> listHotelData) {
-        try(Connection connection = DriverManager.getConnection(getDatamartUrl())) {
+        try(java.sql.Connection connection = DriverManager.getConnection(getDatamartUrl())) {
             Statement statement = connection.createStatement();
             statement.execute("INSERT INTO hotel VALUES (" +
                     "null," +
@@ -93,7 +108,7 @@ public class HotelDataProcessor implements DataProcessor{
         }
     }
     private List<Object> collectInformation(String data) {
-        ArrayList<Object> listHotelData = new ArrayList<>(); // TODO HACER UN MAP PARA QUE QUEDE MAS MONO ¿?
+        ArrayList<Object> listHotelData = new ArrayList<>();
         JsonElement jsonElement = JsonParser.parseString(data);
         listHotelData.add(jsonElement.getAsJsonObject().get("name").getAsString());
         listHotelData.add(jsonElement.getAsJsonObject().get("location").getAsJsonObject().get("island").getAsString());
@@ -111,7 +126,7 @@ public class HotelDataProcessor implements DataProcessor{
         return listHotelData;
     }
     private void createHotelTable() {
-        try(Connection connection = DriverManager.getConnection(getDatamartUrl())) {
+        try(java.sql.Connection connection = DriverManager.getConnection(getDatamartUrl())) {
             Statement statement = connection.createStatement();
             statement.execute("CREATE TABLE IF NOT EXISTS hotel (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -144,8 +159,11 @@ public class HotelDataProcessor implements DataProcessor{
                 TextMessage textMessage = (TextMessage) message;
                 try {
                     String text = textMessage.getText();
-                    List<Object> listHotelData = collectInformation(text);
+                    saveDataToDatamart(text);
+                    /*
+                    List<Object> listHotelData = collectInformation(text); // TODO AGREGAR EL SAVEDATATODATAMART
                     insertHotelData(listHotelData);
+                     */
                 } catch (JMSException e) {
                     throw new MessageBrokerException(e.getMessage());
                 }

@@ -119,7 +119,7 @@ public class SerpApiHotelProvider implements HotelProvider {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate checkInDate = LocalDate.now().plusDays(1);
         String checkInDateFormatted = checkInDate.format(formatter);
-        LocalDate checkOutDate = LocalDate.now().plusDays(4);
+        LocalDate checkOutDate = LocalDate.now().plusDays(5);
         String checkOutDateFormatted = checkOutDate.format(formatter);
         dates.put("checkInDateFormatted", checkInDateFormatted);
         dates.put("checkOutDateFormatted", checkOutDateFormatted);
