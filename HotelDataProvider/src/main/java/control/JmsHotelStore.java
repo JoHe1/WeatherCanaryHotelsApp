@@ -9,7 +9,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import javax.jms.*;
 import java.time.Instant;
 
-public class JmsHotelStore implements HotelStore { // TODO: CAMBIAR JmsHotelPublisher
+public class JmsHotelStore implements HotelStore {
     private final String topic = "information.Hotel";
     private final String url = "tcp://localhost:61616";
     @Override

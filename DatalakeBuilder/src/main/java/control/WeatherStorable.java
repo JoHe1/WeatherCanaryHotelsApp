@@ -1,5 +1,8 @@
+package control;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import exceptions.InitialiserSubscriberException;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -24,7 +27,7 @@ public class WeatherStorable implements Storable{
     @Override
     public void save() {
         try{
-            System.out.println("WeatherStorable");
+            System.out.println("control.WeatherStorable");
             MessageConsumer subscriber = initialiseSubscriber();
             subscriber.setMessageListener(message -> {
                 TextMessage textMessage = (TextMessage) message;
@@ -61,15 +64,20 @@ public class WeatherStorable implements Storable{
             throw new RuntimeException(e);
         }
     }
-    private MessageConsumer initialiseSubscriber() throws JMSException { // TODO ARREGLAR LA EXCEPCION
-        ConnectionFactory factory = new ActiveMQConnectionFactory(getBrokerUrl()); // TODO ARREGLAR ESTO
-        Connection connection = factory.createConnection();
-        connection.setClientID("DatalakeBuilder" + getTopicName());
-        connection.start();
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Topic topic = session.createTopic(getTopicName());
-        MessageConsumer subscriber = session.createDurableSubscriber(topic, "DatalakeBuilder" + getTopicName());
-        return subscriber;
+    private MessageConsumer initialiseSubscriber(){
+        Connection connection = null;
+        try {
+            ConnectionFactory factory = new ActiveMQConnectionFactory(getBrokerUrl());
+            connection = factory.createConnection();
+            connection.setClientID("DatalakeBuilder" + getTopicName());
+            connection.start();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Topic topic = session.createTopic(getTopicName());
+            MessageConsumer subscriber = session.createDurableSubscriber(topic, "DatalakeBuilder" + getTopicName());
+            return subscriber;
+        } catch (JMSException e) {
+            throw new InitialiserSubscriberException("Error initialising subscriber", e);
+        }
     }
     public void createDirectory() {
         Path directory = Paths.get(getPath() + getSs());

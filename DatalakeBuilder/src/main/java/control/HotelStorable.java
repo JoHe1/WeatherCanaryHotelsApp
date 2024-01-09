@@ -1,5 +1,8 @@
+package control;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import exceptions.InitialiserSubscriberException;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -61,15 +64,20 @@ public class HotelStorable implements Storable{
             throw new RuntimeException(e);
         }
     }
-    private MessageConsumer initialiseSubscriber() throws JMSException {
-        ConnectionFactory factory = new ActiveMQConnectionFactory(getBrokerURL()); //TODO CAMBIAR ATRIBUTOS POR SUS GETS
-        Connection connection = factory.createConnection();
-        connection.setClientID("DatalakeBuilder" + getTopicName());
-        connection.start();
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Topic topic = session.createTopic(getTopicName());
-        MessageConsumer subscriber = session.createDurableSubscriber(topic, "DatalakeBuilder" + getTopicName());
-        return subscriber;
+    private MessageConsumer initialiseSubscriber() {
+        Connection connection = null;
+        try {
+            ConnectionFactory factory = new ActiveMQConnectionFactory(getBrokerURL());
+            connection = factory.createConnection();
+            connection.setClientID("DatalakeBuilder" + getTopicName());
+            connection.start();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Topic topic = session.createTopic(getTopicName());
+            MessageConsumer subscriber = session.createDurableSubscriber(topic, "DatalakeBuilder" + getTopicName());
+            return subscriber;
+        } catch (JMSException e) {
+            throw new InitialiserSubscriberException("Error initialising subscriber", e);
+        }
     }
     public void createDirectory() {
         Path directory = Paths.get(getPath() + getSs());
