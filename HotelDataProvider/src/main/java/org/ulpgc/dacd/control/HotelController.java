@@ -43,14 +43,16 @@ public class HotelController {
     }
     public void periodicTask() {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        Calendar now = Calendar.getInstance();
         Calendar nextRun = Calendar.getInstance();
         nextRun.set(Calendar.HOUR_OF_DAY, 12);
         nextRun.set(Calendar.MINUTE, 00);
         nextRun.set(Calendar.SECOND, 0);
         nextRun.set(Calendar.MILLISECOND, 0);
-        Date firstRun = nextRun.getTime();
-        long initialDelay = firstRun.getTime() - System.currentTimeMillis();
+        if (now.after(nextRun)) {
+            nextRun.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        long initialDelay = nextRun.getTimeInMillis() - System.currentTimeMillis();
         scheduler.scheduleAtFixedRate(new Task(this), initialDelay, 4 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
-        new Task(this).run(); // TODO remove
     }
 }
