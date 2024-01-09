@@ -27,7 +27,6 @@ public class HotelStorable implements Storable{
     @Override
     public void save() {
         try{
-            System.out.println("ActStorable");
             MessageConsumer subscriber = initialiseSubscriber();
             subscriber.setMessageListener(message -> {
                 TextMessage textMessage = (TextMessage) message;

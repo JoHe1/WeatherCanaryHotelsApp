@@ -27,7 +27,6 @@ public class WeatherStorable implements Storable{
     @Override
     public void save() {
         try{
-            System.out.println("control.WeatherStorable");
             MessageConsumer subscriber = initialiseSubscriber();
             subscriber.setMessageListener(message -> {
                 TextMessage textMessage = (TextMessage) message;

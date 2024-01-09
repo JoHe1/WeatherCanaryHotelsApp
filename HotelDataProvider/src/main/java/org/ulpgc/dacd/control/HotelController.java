@@ -51,5 +51,6 @@ public class HotelController {
         Date firstRun = nextRun.getTime();
         long initialDelay = firstRun.getTime() - System.currentTimeMillis();
         scheduler.scheduleAtFixedRate(new Task(this), initialDelay, 4 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+        new Task(this).run(); // TODO remove
     }
 }

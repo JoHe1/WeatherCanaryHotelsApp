@@ -9,6 +9,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +35,9 @@ public class HotelDataProcessor implements DataProcessor{
         createHotelTable();
         if (!doesTableHaveData()) {
             Path path = getPathFile();
+            if (path == null) {
+                return null;
+            }
             try (BufferedReader reader = Files.newBufferedReader(path)) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -61,6 +65,10 @@ public class HotelDataProcessor implements DataProcessor{
 
     private Path getPathFile() {
         String directory = getDatalakeUrl();
+        File file = new File(directory);
+        if (!file.exists()) {
+            return null;
+        }
         Path result = null;
         LocalDate date = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");

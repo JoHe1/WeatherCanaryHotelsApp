@@ -163,7 +163,7 @@ We have created a class to connect to the broker and save the events we receive 
 
 #### Arguments
 The arguments that the module admits are the following:
-- **-args[0] (String):** This argument is the one that indicates the path of the file where we want to save the datalake.
+- **-args[0] (String):** This argument is the one that indicates the path of the file where we want to save the datalake. Example: "DatalakeBuilder/src/main/" is important the last slash.
 
 **Important note:** This path is the second argument of the ReservationWeatherAnalyzer module is very important that the path is the same in both modules.
 
@@ -208,8 +208,8 @@ This module works with a part of logical control of all calls and searches and a
 
 #### Arguments
 The arguments that the module admits are the following:
-- **-args[0] (String):** This argument is the one that indicates the path of the file where we want to save the datamart.
-- **-args[1] (String):** This argument is the one that indicates the path of the file where is the datalake.
+- **-args[0] (String):** This argument is the one that indicates the path of the file where we want to save the datamart. Example: "ReservationWeatherAnalyzer/src/main/" is important the last slash.
+- **-args[1] (String):** This argument is the one that indicates the path of the file where is the datalake. Example: "DatalakeBuilder/src/main/" is important the last slash.
 
 **Important note:** This path is the second argument of the DatalakeBuilder module is very important that the path is the same in both modules.
 

@@ -46,6 +46,6 @@ public class WeatherController {
         }
         long initialDelay = nextRun.getTimeInMillis() - System.currentTimeMillis();
         scheduler.scheduleAtFixedRate(new Task(this), initialDelay, 6 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
-        new Task(this).run();
+        new Task(this).run(); // TODO remove
     }
 }
