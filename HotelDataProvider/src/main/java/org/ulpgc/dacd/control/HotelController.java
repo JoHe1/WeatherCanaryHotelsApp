@@ -3,7 +3,6 @@ package org.ulpgc.dacd.control;
 import org.ulpgc.dacd.model.Hotel;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,7 +45,7 @@ public class HotelController {
         Calendar now = Calendar.getInstance();
         Calendar nextRun = Calendar.getInstance();
         nextRun.set(Calendar.HOUR_OF_DAY, 12);
-        nextRun.set(Calendar.MINUTE, 00);
+        nextRun.set(Calendar.MINUTE, 0);
         nextRun.set(Calendar.SECOND, 0);
         nextRun.set(Calendar.MILLISECOND, 0);
         if (now.after(nextRun)) {
